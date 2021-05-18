@@ -97,6 +97,6 @@ install(TARGETS liburg_c open_urg_sensor angle_convert_test calculate_xy find_po
 )
 
 ## Mark cpp header files for installation
-install(DIRECTORY ${LIBRARY_INCLUDE_DIR}/${PROJECT_NAME}/
+install(DIRECTORY ${LIBRARY_DIR}/include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
