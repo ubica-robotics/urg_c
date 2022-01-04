@@ -1,14 +1,12 @@
 /*!
-  \~japanese
-  \example sensor_parameter.c ƒZƒ“ƒTî•ñ‚Ìo—Í
-
+  \example sensor_parameter.c Outputs sensor information fields
   \author Satofumi KAMIMURA
 
-  $Id: sensor_parameter.c,v 0caa22c18f6b 2010/12/30 03:36:32 Satofumi $
+  $Id$
 */
 
-#include "urg_c/urg_sensor.h"
-#include "urg_c/urg_utils.h"
+#include "urg_sensor.h"
+#include "urg_utils.h"
 #include "open_urg_sensor.h"
 #include <stdio.h>
 

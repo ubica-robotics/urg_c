@@ -1,18 +1,15 @@
 /*!
-  \~japanese
-  \example get_distance_intensity.c 距離・強度データを取得する
-
+  \example get_distance_intensity.c Obtains distance and intensity data
   \author Satofumi KAMIMURA
 
-  $Id: get_distance_intensity.c,v 586c4fa697ef 2011/01/24 08:50:01 Satofumi $
+  $Id$
 */
 
-#include "urg_c/urg_sensor.h"
-#include "urg_c/urg_utils.h"
+#include "urg_sensor.h"
+#include "urg_utils.h"
 #include "open_urg_sensor.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 static void print_data(urg_t *urg, long data[], unsigned short intensity[],
@@ -22,7 +19,7 @@ static void print_data(urg_t *urg, long data[], unsigned short intensity[],
     int front_index;
     (void)data_n;
 
-    // \~japanese 前方のデータのみを表示
+    // Shows only the front step
     front_index = urg_step2index(urg, 0);
     printf("%ld [mm], %d [1], (%ld [msec])\n",
            data[front_index], intensity[front_index], time_stamp);
@@ -32,7 +29,7 @@ static void print_data(urg_t *urg, long data[], unsigned short intensity[],
 
     int i;
 
-    // \~japanese 全てのデータを表示
+    // Prints the range/intensity values for all the measurement points
     printf("# n = %d, time_stamp = %ld\n", data_n, time_stamp);
     for (i = 0; i < data_n; ++i) {
         printf("%d, %ld, %d\n", i, data[i], intensity[i]);
@@ -51,20 +48,12 @@ int main(int argc, char *argv[])
     long *data = NULL;
     unsigned short *intensity = NULL;
     long time_stamp;
-    unsigned long long system_time_stamp;
     int n;
     int i;
 
     if (open_urg_sensor(&urg, argc, argv) < 0) {
         return 1;
     }
-
-	// Distance Intensity reading only (?) on UXM-30LX
-	if (!strstr(urg_sensor_product_type(&urg),"UXM-30LX")) {
-		fprintf(stderr,"Distance Intensity not supported on %s\n",
-				urg_sensor_product_type(&urg));
-		return 1;
-	}
 
     max_data_size = urg_max_data_size(&urg);
     data = (long *)malloc(max_data_size * sizeof(data[0]));
@@ -78,10 +67,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // \~japanese データ取得
-    urg_start_measurement(&urg, URG_DISTANCE_INTENSITY, CAPTURE_TIMES, 0);
+    // Gets measurement data
+    urg_start_measurement(&urg, URG_DISTANCE_INTENSITY, URG_SCAN_INFINITY, 0);
     for (i = 0; i < CAPTURE_TIMES; ++i) {
-        n = urg_get_distance_intensity(&urg, data, intensity, &time_stamp, &system_time_stamp);
+        n = urg_get_distance_intensity(&urg, data, intensity, &time_stamp);
         if (n <= 0) {
             printf("urg_get_distance_intensity: %s\n", urg_error(&urg));
             free(data);
@@ -91,7 +80,7 @@ int main(int argc, char *argv[])
         print_data(&urg, data, intensity, n, time_stamp);
     }
 
-    // \~japanese 切断
+    // Disconnects
     free(intensity);
     free(data);
     urg_close(&urg);

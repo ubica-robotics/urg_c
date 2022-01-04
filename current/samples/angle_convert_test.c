@@ -1,14 +1,12 @@
 /*!
-  \~japanese
-  \example angle_convert_test.c 角度変換の結果を表示する
-
+  \example angle_convert_test.c Some cases of angle conversion
   \author Satofumi KAMIMURA
 
-  $Id: sync_time_stamp.c,v 799c195d046c 2011/01/14 05:10:38 hokuyo $
+  $Id$
 */
 
-#include "urg_c/urg_sensor.h"
-#include "urg_c/urg_utils.h"
+#include "urg_sensor.h"
+#include "urg_utils.h"
 #include "open_urg_sensor.h"
 #include <stdio.h>
 

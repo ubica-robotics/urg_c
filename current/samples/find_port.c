@@ -1,13 +1,11 @@
 /*!
-  \~japanese
-  \example find_port.c É|Å[ÉgÇÃíTçı
-
+  \example find_port.c Finds out the port
   \author Satofumi KAMIMURA
 
   $Id$
 */
 
-#include "urg_c/urg_serial_utils.h"
+#include "urg_serial_utils.h"
 #include <stdio.h>
 
 

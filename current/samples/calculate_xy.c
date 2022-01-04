@@ -1,16 +1,14 @@
 /*!
-  \~japanese
-  \example calculate_xy.c X-Y 座標系での位置を計算する
+  \example calculate_xy.c Calculates X-Y coordinates
 
-  センサ前方が X 軸の方向とみなした直行座標上で、距離データを位置を出力する。
-
+  Having the X axis aligned to the front step of the sensor, calculates the coordinates for measurement data
   \author Satofumi KAMIMURA
 
-  $Id: calculate_xy.c,v 586c4fa697ef 2011/01/24 08:50:01 Satofumi $
+  $Id$
 */
 
-#include "urg_c/urg_sensor.h"
-#include "urg_c/urg_utils.h"
+#include "urg_sensor.h"
+#include "urg_utils.h"
 #include "open_urg_sensor.h"
 #include <math.h>
 #include <stdio.h>
@@ -24,7 +22,6 @@ int main(int argc, char *argv[])
     long max_distance;
     long min_distance;
     long time_stamp;
-    unsigned long long system_time_stamp;
     int i;
     int n;
 
@@ -38,16 +35,16 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // \~japanese データ取得
+    // Gets measurement data
     urg_start_measurement(&urg, URG_DISTANCE, 1, 0);
-    n = urg_get_distance(&urg, data, &time_stamp, &system_time_stamp);
+    n = urg_get_distance(&urg, data, &time_stamp);
     if (n < 0) {
         printf("urg_get_distance: %s\n", urg_error(&urg));
         urg_close(&urg);
         return 1;
     }
 
-    // \~japanese X-Y 座標系の値を出力
+    // Outputs X-Y coordinates
     urg_distance_min_max(&urg, &min_distance, &max_distance);
     for (i = 0; i < n; ++i) {
         long distance = data[i];
@@ -67,7 +64,7 @@ int main(int argc, char *argv[])
     }
     printf("\n");
 
-    // \~japanese 切断
+    // Disconnects
     free(data);
     urg_close(&urg);
 
