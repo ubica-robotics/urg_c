@@ -6,10 +6,11 @@
   $Id$
 */
 
-#include "urg_utils.h"
-#include "urg_errno.h"
+#include "urg_c/urg_utils.h"
+#include "urg_c/urg_errno.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <unistd.h>
 
 #undef max
 #undef min

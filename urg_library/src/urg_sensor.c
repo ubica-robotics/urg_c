@@ -8,9 +8,9 @@
   \todo Run correctly when a Mx measurement command is in operation and a second Mx command is received
 */
 
-#include "urg_sensor.h"
-#include "urg_errno.h"
-#include "urg_utils.h"
+#include "urg_c/urg_sensor.h"
+#include "urg_c/urg_errno.h"
+#include "urg_c/urg_utils.h"
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
@@ -584,7 +584,7 @@ static int receive_length_data(urg_t *urg, long length[],
 
 //!  Gets measurement data
 static int receive_data(urg_t *urg, long data[], unsigned short intensity[],
-                        long *time_stamp)
+                        long *time_stamp, unsigned long long *system_time_stamp)
 {
     urg_measurement_type_t type;
     char buffer[BUFFER_SIZE];
@@ -638,7 +638,7 @@ static int receive_data(urg_t *urg, long data[], unsigned short intensity[],
                 ignore_receive_data_with_qt(urg, urg->timeout);
                 return set_errno_and_return(urg, URG_INVALID_RESPONSE);
             } else {
-                return receive_data(urg, data, intensity, time_stamp);
+                return receive_data(urg, data, intensity, time_stamp, system_time_stamp);
             }
         }
     }
@@ -664,6 +664,9 @@ static int receive_data(urg_t *urg, long data[], unsigned short intensity[],
         if (time_stamp) {
             *time_stamp = urg_scip_decode(buffer, 4);
         }
+	if (system_time_stamp) {
+            urg_get_walltime(system_time_stamp);
+	}
     }
 
     // Gets the measurement data
@@ -951,47 +954,47 @@ int urg_start_measurement(urg_t *urg, urg_measurement_type_t type,
 }
 
 
-int urg_get_distance(urg_t *urg, long data[], long *time_stamp)
+int urg_get_distance(urg_t *urg, long data[], long *time_stamp, unsigned long long *system_time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
     }
-    return receive_data(urg, data, NULL, time_stamp);
+    return receive_data(urg, data, NULL, time_stamp, system_time_stamp);
 }
 
 
 int urg_get_distance_intensity(urg_t *urg,
                                long data[], unsigned short intensity[],
-                               long *time_stamp)
+                               long *time_stamp, unsigned long long *system_time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
     }
 
-    return receive_data(urg, data, intensity, time_stamp);
+    return receive_data(urg, data, intensity, time_stamp, system_time_stamp);
 }
 
 
-int urg_get_multiecho(urg_t *urg, long data_multi[], long *time_stamp)
+int urg_get_multiecho(urg_t *urg, long data_multi[], long *time_stamp, unsigned long long *system_time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
     }
 
-    return receive_data(urg, data_multi, NULL, time_stamp);
+    return receive_data(urg, data_multi, NULL, time_stamp, system_time_stamp);
 }
 
 
 int urg_get_multiecho_intensity(urg_t *urg,
                                 long data_multi[],
                                 unsigned short intensity_multi[],
-                                long *time_stamp)
+                                long *time_stamp, unsigned long long *system_time_stamp)
 {
     if (!urg->is_active) {
         return set_errno_and_return(urg, URG_NOT_CONNECTED);
     }
 
-    return receive_data(urg, data_multi, intensity_multi, time_stamp);
+    return receive_data(urg, data_multi, intensity_multi, time_stamp, system_time_stamp);
 }
 
 
@@ -1014,7 +1017,7 @@ int urg_stop_measurement(urg_t *urg)
 
     for (i = 0; i < MAX_READ_TIMES; ++i) {
         // Skips measuement data until QT response is received
-        ret = receive_data(urg, NULL, NULL, NULL);
+        ret = receive_data(urg, NULL, NULL, NULL, NULL);
         if (ret == URG_NO_ERROR) {
             // Correct response
             urg->is_laser_on = URG_FALSE;
@@ -1345,3 +1348,83 @@ void urg_set_error_handler(urg_t *urg, urg_error_handler handler)
 {
     urg->error_handler = handler;
 }
+
+const char *urg_sensor_vendor(urg_t *urg){
+    enum {
+        RECEIVE_BUFFER_SIZE = BUFFER_SIZE * VV_RESPONSE_LINES,
+    };
+    char receive_buffer[RECEIVE_BUFFER_SIZE];
+    const char *ret;
+    char *p;
+
+    if (!urg->is_active) {
+        return NOT_CONNECTED_MESSAGE;
+    }
+
+    ret = receive_command_response(urg, receive_buffer, RECEIVE_BUFFER_SIZE,
+                                   "VV\n", VV_RESPONSE_LINES);
+    if (ret) {
+        return ret;
+    }
+
+    p = copy_token(urg->return_buffer,
+                   receive_buffer, "VEND:", ";", VV_RESPONSE_LINES);
+    return (p) ? p : RECEIVE_ERROR_MESSAGE;
+}
+
+const char *urg_sensor_firmware_date(urg_t *urg)
+{
+    enum {
+        RECEIVE_BUFFER_SIZE = BUFFER_SIZE * VV_RESPONSE_LINES,
+    };
+    char receive_buffer[RECEIVE_BUFFER_SIZE];
+    const char *ret;
+    char *p;
+
+    if (!urg->is_active) {
+        return NOT_CONNECTED_MESSAGE;
+    }
+
+    // Get the firmware version and append a '(', this will be what's before the date
+    char firmware_version[50];
+    strcpy(firmware_version, urg_sensor_firmware_version(urg));
+    strcat(firmware_version, "(");
+
+    ret = receive_command_response(urg, receive_buffer, RECEIVE_BUFFER_SIZE,
+                                   "VV\n", VV_RESPONSE_LINES);
+    if (ret) {
+        return ret;
+    }
+
+    // Strip out the actual date from between the '(' and ')'
+    char *date;
+    p = copy_token(urg->return_buffer,
+               receive_buffer, "FIRM:", ";", VV_RESPONSE_LINES);
+    date = copy_token(urg->return_buffer, p, firmware_version, ")", 1);
+    return (date) ? date : RECEIVE_ERROR_MESSAGE;
+}
+
+const char *urg_sensor_protocol_version(urg_t *urg)
+{
+    enum {
+        RECEIVE_BUFFER_SIZE = BUFFER_SIZE * VV_RESPONSE_LINES,
+    };
+    char receive_buffer[RECEIVE_BUFFER_SIZE];
+    const char *ret;
+    char *p;
+
+    if (!urg->is_active) {
+        return NOT_CONNECTED_MESSAGE;
+    }
+
+    ret = receive_command_response(urg, receive_buffer, RECEIVE_BUFFER_SIZE,
+                                   "VV\n", VV_RESPONSE_LINES);
+    if (ret) {
+        return ret;
+    }
+
+    p = copy_token(urg->return_buffer,
+                   receive_buffer, "PROT:", ";", VV_RESPONSE_LINES);
+    return (p) ? p : RECEIVE_ERROR_MESSAGE;
+}
+

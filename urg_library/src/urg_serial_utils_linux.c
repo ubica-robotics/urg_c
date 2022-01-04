@@ -7,7 +7,7 @@
   $Id$
 */
 
-#include "urg_serial_utils.h"
+#include "urg_c/urg_serial_utils.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <string.h>

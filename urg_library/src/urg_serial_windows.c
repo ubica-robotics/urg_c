@@ -6,7 +6,7 @@
   $Id$
 */
 
-#include "urg_serial.h"
+#include "urg_c/urg_serial.h"
 #include <stdio.h>
 
 #if defined(URG_MSC)

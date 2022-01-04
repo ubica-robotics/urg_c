@@ -6,7 +6,7 @@
   $Id$
 */
 
-#include "urg_debug.h"
+#include "urg_c/urg_debug.h"
 
 
 int urg_raw_write(urg_t *urg, const char *data, int data_size)

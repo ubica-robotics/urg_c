@@ -6,7 +6,7 @@
   $Id$
 */
 
-#include "urg_ring_buffer.h"
+#include "urg_c/urg_ring_buffer.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>

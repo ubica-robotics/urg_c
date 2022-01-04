@@ -6,7 +6,7 @@
   $Id$
 */
 
-#include "urg_connection.h"
+#include "urg_c/urg_connection.h"
 
 
 int connection_open(urg_connection_t *connection,

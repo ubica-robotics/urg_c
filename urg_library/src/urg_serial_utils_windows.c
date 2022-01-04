@@ -9,8 +9,8 @@
   \todo Fix the code to be C90 compliant, but keeping the "//" comments
 */
 
-#include "urg_serial_utils.h"
-#include "urg_detect_os.h"
+#include "urg_c/urg_serial_utils.h"
+#include "urg_c/urg_detect_os.h"
 #include <windows.h>
 #include <setupapi.h>
 #include <string.h>
