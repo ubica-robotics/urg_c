@@ -2,6 +2,14 @@
 Changelog for package urg_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Modified functions to return a system time stamp, and added urg_c to the include paths
+* Delete cpp files that are not used
+* Rename the directory
+* Replace files of the current directory by the urg_library-1.2.5.zip as released by the URG Network on sourceforge
+* Contributors: Alexis Maldonado
+
 1.0.4001 (2020-06-10)
 ---------------------
 * add maintainer for ros2 (`#13 <https://github.com/ros-drivers/urg_c/issues/13>`_)
