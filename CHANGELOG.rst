@@ -2,6 +2,12 @@
 Changelog for package urg_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix installation of headers
+* Bumped CMake version to avoid author warning.
+* Contributors: Ferenc Balint-Benczedi, Tony Baltovski
+
 1.0.405 (2018-08-07)
 --------------------
 * pass *pointer to* system timestamp, sync issue on quit
