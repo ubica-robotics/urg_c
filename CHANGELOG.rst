@@ -2,8 +2,8 @@
 Changelog for package urg_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+101.0.4005 (2025-03-31)
+-----------------------
 * fix installation of headers
 * Bumped CMake version to avoid author warning.
 * Contributors: Ferenc Balint-Benczedi, Tony Baltovski
