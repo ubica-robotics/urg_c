@@ -2,8 +2,8 @@
 Changelog for package urg_c
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+101.2.5000 (2025-03-31)
+-----------------------
 * Modified functions to return a system time stamp, and added urg_c to the include paths
 * Delete cpp files that are not used
 * Rename the directory
